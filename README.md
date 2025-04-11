@@ -1,0 +1,2 @@
+# Practical
+Angular Practical Task
