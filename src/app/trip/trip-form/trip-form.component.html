@@ -1,0 +1,35 @@
+<div class="trip-form-container">
+    <h2>Add Trip</h2>
+    <form [formGroup]="tripForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="startPoint">Start Point:</label>
+        <input
+          type="text"
+          id="startPoint"
+          formControlName="startPoint"
+          placeholder="Enter starting location"
+        >
+        <div *ngIf="tripForm.get('startPoint')?.invalid && tripForm.get('startPoint')?.touched" class="error">
+          Start point is required (min 3 characters)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="endPoint">End Point:</label>
+        <input
+          type="text"
+          id="endPoint"
+          formControlName="endPoint"
+          placeholder="Enter destination"
+        >
+        <div *ngIf="tripForm.get('endPoint')?.invalid && tripForm.get('endPoint')?.touched" class="error">
+          End point is required (min 3 characters)
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="tripForm.invalid">Add Trip</button>
+        <button type="button" (click)="clearTrips()">Clear All</button>
+      </div>
+    </form>
+  </div>

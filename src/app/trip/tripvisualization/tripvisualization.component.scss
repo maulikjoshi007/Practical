@@ -1,0 +1,24 @@
+.trip-viz-container {
+    width: 100%;
+    background-color: white;
+    padding: 20px;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; max-width: 100%; border: 1px solid #ccc;
+}
+
+svg {
+    width: max-content;
+    min-width: 600px;
+    overflow: auto;
+}
+
+.no-trips {
+    padding: 40px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    color: #888;
+    font-style: italic;
+}

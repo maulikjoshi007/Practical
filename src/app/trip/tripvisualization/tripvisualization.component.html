@@ -1,0 +1,109 @@
+<div class="trip-viz-container" *ngIf="tripNodes.length > 0">
+  <svg width="100%" height="200" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMid meet">
+    <!-- First render all curved Level 2+ connections -->
+    <ng-container *ngFor="let node of tripNodes; let i = index">
+        <ng-container *ngIf="node.connections && node.connections.length > 0">
+            <ng-container *ngFor="let conn of node.connections">
+              <path
+                [attr.d]="getCurvedPath(node.position, conn.to, conn.level, conn.direction)"
+                [attr.stroke]="getColor(node.position)"
+                fill="none"
+                stroke-width="2"
+              ></path>
+            </ng-container>
+          </ng-container>
+
+    </ng-container>
+
+    <!-- Then render all the Level 1 trips (straight lines) -->
+    <ng-container *ngFor="let node of tripNodes; let i = index">
+      <ng-container *ngIf="node.level === 1">
+        <!-- Non-continued trip with arrow -->
+        <g *ngIf="!node.continued; else continuedTrip">
+          <line
+            [attr.x1]="100 + (i * 220)"
+            [attr.y1]="100"
+            [attr.x2]="290 + (i * 220)"
+            [attr.y2]="100"
+            [attr.stroke]="getColor(i)"
+            stroke-width="2"
+          ></line>
+
+          <polygon
+            [attr.points]="getArrowPoints(i)"
+            [attr.fill]="getColor(i)"
+            stroke="none"
+          ></polygon>
+
+          <circle
+            [attr.cx]="100 + (i * 220)"
+            [attr.cy]="100"
+            r="8"
+            [attr.fill]="getColor(i)"
+          ></circle>
+
+          <circle
+            [attr.cx]="300 + (i * 220)"
+            [attr.cy]="100"
+            r="8"
+            [attr.fill]="getColor(i)"
+            stroke="#ffffff"
+            stroke-width="2"
+          ></circle>
+
+          <text
+            [attr.x]="200 + (i * 220)"
+            [attr.y]="140"
+            text-anchor="middle"
+            [attr.fill]="getColor(i)"
+            font-size="14"
+            font-weight="500"
+          >{{node.startCode}} - {{node.endCode}}</text>
+        </g>
+
+        <!-- Template for continued trips -->
+        <ng-template #continuedTrip>
+          <line
+            [attr.x1]="100 + (i * 220)"
+            [attr.y1]="100"
+            [attr.x2]="300 + (i * 220)"
+            [attr.y2]="100"
+            [attr.stroke]="getColor(i)"
+            stroke-width="2"
+          ></line>
+
+          <circle
+            [attr.cx]="100 + (i * 220)"
+            [attr.cy]="100"
+            r="8"
+            [attr.fill]="getColor(i-1)"
+            stroke="#ffffff"
+            stroke-width="2"
+          ></circle>
+
+          <circle
+            [attr.cx]="300 + (i * 220)"
+            [attr.cy]="100"
+            r="8"
+            [attr.fill]="getColor(i)"
+            stroke="#ffffff"
+            stroke-width="2"
+          ></circle>
+
+          <text
+            [attr.x]="200 + (i * 220)"
+            [attr.y]="140"
+            text-anchor="middle"
+            [attr.fill]="getColor(i)"
+            font-size="14"
+            font-weight="500"
+          >{{node.startCode}} - {{node.endCode}}</text>
+        </ng-template>
+      </ng-container>
+    </ng-container>
+  </svg>
+</div>
+
+<div class="no-trips" *ngIf="tripNodes.length === 0">
+  No trips added yet. Please add a trip using the form above.
+</div>
