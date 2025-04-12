@@ -21,12 +21,15 @@ export class TripvisualizationComponent {
 
   constructor(private tripService: TripService) {}
 
+  // INITIALIZES THE COMPONENT AND SUBSCRIBES TO THE TRIP DATA STREAM
+
   ngOnInit(): void {
     this.subscription = this.tripService.trips$.subscribe(trips => {
       this.processTrips(trips);
     });
   }
 
+  // ADDS A NEW TRIP TO THE LIST USING START AND END POINT VALUES
   addTrip() {
     if (this.startPoint && this.endPoint) {
       this.tripService.addTrip({ startPoint: this.startPoint, endPoint: this.endPoint });
@@ -35,17 +38,22 @@ export class TripvisualizationComponent {
     }
   }
 
+  // PROCESSES TRIPS TO GENERATE TRIPNODES WITH LEVELS, CONTINUITY, AND CONNECTIONS
+
   private processTrips(trips: Trip[]): void {
     this.tripNodes = [];
 
     for (let i = 0; i < trips.length; i++) {
       const curr = trips[i];
       const prev = i > 0 ? trips[i - 1] : null;
+
+      // CHECKS IF CURRENT TRIP IS A CONTINUATION OF PREVIOUS TRIP (CASE-INSENSITIVE)
       const continued = prev?.endPoint.toLowerCase() === curr.startPoint.toLowerCase();
 
       this.tripNodes.push({
         startPoint: curr.startPoint,
         endPoint: curr.endPoint,
+        // CONVERTS START AND END POINTS TO 3-LETTER UPPERCASE CODES FOR DISPLAY
         startCode: curr.startPoint.slice(0, 3).toUpperCase(),
         endCode: curr.endPoint.slice(0, 3).toUpperCase(),
         level: 1,
@@ -55,9 +63,10 @@ export class TripvisualizationComponent {
       });
     }
 
-    // Level 2 and above (repeated trips)
+    // IDENTIFIES REPEATED TRIPS AND ASSIGNS LEVELS AND CURVED CONNECTIONS
     const map = new Map<string, number[]>();
     this.tripNodes.forEach((t, i) => {
+      // KEY IS BASED ON LOWERCASE ROUTE STRING TO IDENTIFY DUPLICATES CASE-INSENSITIVELY
       const key = t.startPoint.toLowerCase() + '->' + t.endPoint.toLowerCase();
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(i);
@@ -76,22 +85,25 @@ export class TripvisualizationComponent {
     });
   }
 
+  // CLEANS UP THE SUBSCRIPTION WHEN COMPONENT IS DESTROYED
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
 
+  // RETURNS ARROW POINTS IN SVG FORMAT FOR CONTINUED TRIPS
   getArrowPoints(index: number): string {
     const x = 290 + index * 220;
     return `${x},100 ${x - 5},95 ${x - 5},105`;
   }
 
+  // RETURNS COLOR FOR EACH TRIP BASED ON INDEX FOR VISUAL DISTINCTION
   getColor(index: number): string {
     const colors = ['#4a6bdf', '#34aeef', '#f4b942', '#7c5295', '#d95649'];
     return colors[index % colors.length];
   }
 
-  // This function creates the curved path for Level 2 connections
-  getCurvedPath(fromIndex: number, toIndex: number, level: number = 2, direction: 'up' | 'down' = 'up'): string {
+// RETURNS SVG PATH STRING FOR CURVED LINES BETWEEN REPEATED TRIPS
+getCurvedPath(fromIndex: number, toIndex: number, level: number = 2, direction: 'up' | 'down' = 'up'): string {
     const startX = 100 + (fromIndex * 220);
     const endX = 300 + (toIndex * 220);
     const baseY = 100;

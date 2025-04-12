@@ -16,15 +16,18 @@ export class TripService {
 
   constructor() {}
 
+  //ADD TRIP DATA
   addTrip(trip: Trip): void {
     this.trips.push(trip);
     this.tripsSubject.next([...this.trips]);
   }
 
+  //GET ALL TRIP DATA
   getAllTrips(): Trip[] {
     return this.trips;
   }
 
+  //CLEAR TRIP DATA
   clearTrips(): void {
     this.trips = [];
     this.tripsSubject.next([]);
